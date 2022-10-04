@@ -8,7 +8,7 @@ class RedirectsPlugin implements MiddlewarePlugin {
 
   constructor() {
     this.redirectsMiddleware = new RedirectsMiddleware({
-      endpoint: 'https://lock-stock-mock.vercel.app',
+      endpoint: process.env.GRAPHQL_ENDPOINT || "https://lock-stock-mock.vercel.app/api/graphql/v1",
       apiKey: '123',
       siteName: 'test',
       // These are all the locales you support in your application.
