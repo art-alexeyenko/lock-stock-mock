@@ -88,6 +88,6 @@ export class RedirectsMiddleware {
   private async getExistsRedirect(req: NextRequest): Promise<RedirectInfo | undefined> {
     const redirects = await this.redirectsService.fetchRedirects();
 
-    return redirects[0] || {};
+    return redirects[0] || undefined;
   }
 }
