@@ -13,14 +13,16 @@ app.get("/api/graphql/v1", (req, res) => {
     res.json({ site: { siteInfo: { redirects: {} }}});
 });
 
-app.post("/api/graphql/v1", (req, res) => {
-  res.json(`
+const sampleReply = /* GraphQL */ `
   site: {
     siteInfo: {
       redirects: []
     }
   }
-  `);
+`;
+
+app.post("/api/graphql/v1", (req, res) => {
+  res.json(sampleReply);
 })
 
 // Initialize server
