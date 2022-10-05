@@ -13,14 +13,12 @@ app.get("/api/graphql/v1", (req, res) => {
     res.json({ site: { siteInfo: { redirects: {} }}});
 });
 
-const redirectDetails = [];
+const redirects = [];
 
 const sampleReply = {
   site: {
     siteInfo: {
-      redirects: {
-        redirectDetails
-      }
+      redirects
     }
   }
 }
