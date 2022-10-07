@@ -22,9 +22,8 @@ class SamplePlugin  {
           'Content-Type': 'application/json',
         },
       })
-      .then(res => res. json())
-      .then((data: any) => {
-        debug('mock:')('response: %o', data)
+      .then((res: any) => {
+        debug('mock:')('response: %o', res)
         resolve(NextResponse.next());
       })
       .catch((error) => {
