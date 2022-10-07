@@ -3,10 +3,5 @@ import middleware from './lib/middleware';
 
 // eslint-disable-next-line
 export default async function (req: NextRequest, ev: NextFetchEvent) {
-  return middleware(req, ev);
+  return middleware();
 }
-
-export const config = {
-  // Exclude Sitecore editing API routes
-  matcher: ['/', '/((?!api/editing/).*)'],
-};
