@@ -3,9 +3,6 @@ const express = require("express");
 
 // Initialize Express
 const app = express();
-app.use((req, res, next) => {
-  setTimeout(() => next(), 2000);
-});
 
 // Create GET request
 app.get("/", (_, res) => {
@@ -13,25 +10,11 @@ app.get("/", (_, res) => {
 });
 
 app.get("/api", (_, res) => {
-  setInterval(function () {
-    res.json({ site: { siteInfo: { redirects: {} }}})
-  }, 2000);
+  res.json({ sample: {json:{}}});
 });
 
-const redirects = [];
-
-const sampleReply = {
-  data: {
-    site: {
-      siteInfo: {
-        redirects
-      }
-    }
-  }
-}
-
 app.post("/api", (_, res) => {
-  res.json(sampleReply);
+  res.json({ sample: {json:{}}});
 });
 
 // Initialize server

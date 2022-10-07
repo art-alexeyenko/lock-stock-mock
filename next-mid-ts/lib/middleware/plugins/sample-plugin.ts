@@ -24,15 +24,15 @@ class SamplePlugin  {
       })
       .then(res => res. json())
       .then((data: any) => {
-        debug(`response: ${data}`);
+        debug('mock:')('response: %o', data)
         resolve(NextResponse.next());
       })
       .catch((error) => {
-        debug(`response error: ${error.response || error.message || error}`, );
+        debug('mock:')('response error: %o', error.response || error.message || error);
         reject(error);
       })
     );
   }
 }
 
-export const samplePlugin = new SamplePlugin('http://localhost:5000/api');
+export const samplePlugin = new SamplePlugin(process.env.FETCH_ENDPOINT || 'http://localhost:5000/api');
