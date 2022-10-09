@@ -1,8 +1,6 @@
 import { GraphQLClient as Client, ClientError } from 'graphql-request';
-import { RequestInit } from 'graphql-request/dist/types.dom';
 import { DocumentNode } from 'graphql';
 import debug, { Debugger } from 'debug';
-import AbortController from 'abort-controller';
 
 /**
  * An interface for GraphQL clients for Sitecore APIs
@@ -43,7 +41,6 @@ export type GraphQLRequestClientConfig = {
  * https://github.com/prisma-labs/graphql-request
  */
 export class GraphQLRequestClient implements GraphQLClient {
-  private client: Client;
   private headers: Record<string, string> = {};
   private debug: Debugger;
   private timeout?: number;
@@ -66,11 +63,6 @@ export class GraphQLRequestClient implements GraphQLClient {
     }
 
     this.timeout = clientConfig.timeout;
-    this.client = new Client(endpoint, {
-      headers: this.headers,
-      fetch: clientConfig.fetch,
-      signal: this.abortController.signal as RequestInit['signal'],
-    });
     this.debug = clientConfig.debugger || debug(`mock:http`);
   }
 
@@ -101,17 +93,28 @@ export class GraphQLRequestClient implements GraphQLClient {
         }, this.timeout);
       }
 
-      this.client
-        .request(query, variables)
-        .then((data: T) => {
-          clearTimeout(abortTimeout);
-          this.debug('response: %o', data);
-          resolve(data);
-        })
-        .catch((error: ClientError) => {
-          this.debug('response error: %o', error.response || error.message || error);
-          reject(error);
-        });
+      fetch(this.endpoint, {
+        method: "POST",
+        signal: this.abortController.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          ...this.headers,
+        },
+        body: JSON.stringify({
+          query: query,
+          variables: variables,
+        }),
+      })
+      .then(res => res.json())
+      .then((data: T) => {
+        clearTimeout(abortTimeout);
+        this.debug('response: %o', data);
+        resolve(data);
+      })
+      .catch((error: ClientError) => {
+        this.debug('response error: %o', error.response || error.message || error);
+        reject(error);
+      });
     });
   }
 }

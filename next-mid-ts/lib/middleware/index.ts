@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextFetchEvent, NextRequest } from 'next/server';
-import { samplePlugin } from './plugins/sample-plugin';
+// import { samplePlugin } from './plugins/sample-plugin';
+import { redirectsPlugin } from './plugins/redirects';
 
 export interface MiddlewarePlugin {
   /**
@@ -19,5 +20,5 @@ export default async function middleware(
 ): Promise<NextResponse> {
   const response = NextResponse.next();
 
-  return Promise.resolve(response).then(() => samplePlugin.exec());
+  return Promise.resolve(response).then(() => redirectsPlugin.exec(req));
 }
