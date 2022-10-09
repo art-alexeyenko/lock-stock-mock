@@ -9,7 +9,7 @@ app.get("/", (req, res) => {
   res.send("Express on Vercel");
 });
 
-app.get("/api/graphql/v1", (req, res) => {
+app.get("/api", (req, res) => {
     res.json({ site: { siteInfo: { redirects: {} }}});
 });
 
@@ -25,7 +25,7 @@ const sampleReply = {
   }
 }
 
-app.post("/api/graphql/v1", (req, res) => {
+app.post("/api", (req, res) => {
   res.json(sampleReply);
 })
 
