@@ -17,8 +17,7 @@ class RedirectsPlugin {
     return NextResponse.next();
   }
 
-  async request(
-  ): Promise<any> {
+  async request(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.debug('request: %o', {
         url: this.endpoint,
