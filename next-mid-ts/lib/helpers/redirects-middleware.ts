@@ -59,7 +59,7 @@ export class RedirectsMiddleware {
     try {
       const redirectsResult = await this.request<any>(this.defaultQuery);
 
-      return redirectsResult?.site?.siteInfo?.redirects || [];
+      return [];
     } catch (error) {
       console.log(`catched: ${error}`);
       return [];
