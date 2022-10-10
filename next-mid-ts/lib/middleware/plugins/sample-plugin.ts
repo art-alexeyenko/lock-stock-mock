@@ -42,12 +42,8 @@ class SamplePlugin  {
    * @param req<NextRequest>
    * @returns Promise<NextResponse>
    */
-  async exec(): Promise<NextResponse> {
-
-    let res = await this.request<RedirectsQueryResult>();
-    if (res)
-        console.log('nice!');
-    return NextResponse.next();
+  async exec(req: NextRequest): Promise<NextResponse> {
+    return this.handler(req);    
   }
 
   async request<T>(): Promise<T> {
@@ -84,6 +80,13 @@ class SamplePlugin  {
             reject(error);
           });
     });
+  }
+
+  private handler = async (req: NextRequest): Promise<NextResponse> => {
+    let res = await this.request<RedirectsQueryResult>();
+    if (res)
+        console.log('nice!');
+    return NextResponse.next();
   }
 
 }
