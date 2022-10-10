@@ -83,9 +83,14 @@ class SamplePlugin  {
   }
 
   private handler = async (req: NextRequest): Promise<NextResponse> => {
-    let res = await this.request<RedirectsQueryResult>();
-    if (res)
-        console.log('nice!');
+    try {
+        let res = await this.request<RedirectsQueryResult>();
+        if (res)
+            console.log('nice!');
+    } catch (error) {
+        console.log(error);
+    }
+
     return NextResponse.next();
   }
 
