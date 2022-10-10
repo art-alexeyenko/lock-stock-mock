@@ -71,11 +71,11 @@ class SamplePlugin  {
           .then(res => res.json())
           .then((data: RedirectsQueryResult) => {
             clearTimeout(abortTimeout);
-            debug('mock')('response: %o', data);
+            debug(`mock:redirects`)('response: %o', data);
             resolve(data);
           })
           .catch((error: any) => {
-            debug('mock')('response error: %o', error.response || error.message || error);
+            debug(`mock:redirects`)('response error: %o', error.response || error.message || error);
             reject(error);
           });
     });
