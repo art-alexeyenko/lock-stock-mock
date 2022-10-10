@@ -7,7 +7,7 @@ app.get("/", (_, res) => {
 });
 
 app.post("/api", (_, res) => {
-  res.json({ sample: {json:{}}});
+  res.json({ response: 'Wow, what a response!'});
 });
 
 app.listen(5000, () => {
