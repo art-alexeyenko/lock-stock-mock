@@ -10,7 +10,7 @@ class RedirectsPlugin implements MiddlewarePlugin {
 
   private abortController = new AbortController();
 
-  private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api",
+  private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api";
 
   private defaultQuery = /* GraphQL */ `
   query RedirectsQuery($siteName: String!) {
