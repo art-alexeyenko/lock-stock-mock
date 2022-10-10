@@ -3,15 +3,34 @@ import {
   GraphQLRedirectsService,
   GraphQLRedirectsServiceConfig,
 } from './graphql-redirects-service';
+import debug from 'debug';
 
 export class RedirectsMiddleware {
+  
+  private debug = debug(`mock:redirects`);
+
+  private timeout = 1000;
+
+  private abortController = new AbortController();
+
+  private defaultQuery = /* GraphQL */ `
+  query RedirectsQuery($siteName: String!) {
+    site {
+      siteInfo(site: $siteName) {
+        whatever
+      }
+    }
+  }
+`;
+  
   private redirectsService: GraphQLRedirectsService;
 
   /**
    * @param {RedirectsMiddlewareConfig} [config] redirects middleware config
    */
-  constructor(config: GraphQLRedirectsServiceConfig) {
+  constructor(private config: GraphQLRedirectsServiceConfig) {
     this.redirectsService = new GraphQLRedirectsService({ ...config});
+    
   }
 
   /**
@@ -39,5 +58,58 @@ export class RedirectsMiddleware {
     const redirects = await this.redirectsService.fetchRedirects();
 
     return redirects[0] || undefined;
+  }
+
+  async fetchRedirects(): Promise<any> {
+    try {
+      const redirectsResult = await this.request<any>(this.defaultQuery);
+
+      return redirectsResult?.site?.siteInfo?.redirects || [];
+    } catch (error) {
+      console.log(`catched: ${error}`);
+      return [];
+    }
+  }
+
+  async request<T>(
+    query: string
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      // Note we don't have access to raw request/response with graphql-request
+      // (or nice hooks like we have with Axios), but we should log whatever we have.
+      this.debug('request: %o', {
+        url: this.config.endpoint,
+        query,
+      });
+
+      let abortTimeout: NodeJS.Timeout;
+
+      if (this.timeout) {
+        abortTimeout = setTimeout(() => {
+          this.abortController.abort();
+        }, this.timeout);
+      }
+
+      fetch(this.config.endpoint, {
+        method: "POST",
+        signal: this.abortController.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: query,
+        }),
+      })
+      .then(res => res.json())
+      .then((data: T) => {
+        clearTimeout(abortTimeout);
+        this.debug('response: %o', data);
+        resolve(data);
+      })
+      .catch((error) => {
+        this.debug('response error: %o', error.response || error.message || error);
+        reject(error);
+      });
+    });
   }
 }
