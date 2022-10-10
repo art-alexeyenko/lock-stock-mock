@@ -1,21 +1,14 @@
 import { NextResponse } from 'next/server';
 import type { NextFetchEvent, NextRequest } from 'next/server';
-import { samplePlugin } from './plugins/sample-plugin';
-
-export interface MiddlewarePlugin {
-  /**
-   * Detect order when the plugin should be called, e.g. 0 - will be called first (can be a plugin which data is required for other plugins)
-   */
-  order: number;
-  /**
-   * A middleware to be called, it's required to return @type {NextResponse} for other middlewares
-   */
-  exec(req: NextRequest, res?: NextResponse, ev?: NextFetchEvent): Promise<NextResponse>;
-}
+// import { maybeReproPlugin } from './plugins/maybe-repro';
+import { alwaysReproPlugin } from './plugins/always-repro';
 
 export default async function middleware(
+  req: NextRequest,
+  ev: NextFetchEvent
 ): Promise<NextResponse> {
   const response = NextResponse.next();
 
-  return Promise.resolve(response).then(() => samplePlugin.exec());
+  return Promise.resolve(response).then(() => alwaysReproPlugin.exec());
+  // return Promise.resolve(response).then(() => maybeReproPlugin.exec());
 }
