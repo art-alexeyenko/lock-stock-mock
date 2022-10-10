@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import debug from 'debug';
 
 class RedirectsPlugin {
@@ -11,9 +11,9 @@ class RedirectsPlugin {
 
   private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api";
 
-  async exec(req: NextRequest): Promise<NextResponse> {
-    const extraData = await this.request();
-    console.log(extraData);
+  async exec(): Promise<NextResponse> {
+    const importantData = await this.request();
+    console.log(importantData);
     return NextResponse.next();
   }
 
@@ -35,15 +35,15 @@ class RedirectsPlugin {
         method: "POST",
         signal: this.abortController.signal,
       })
-        .then((data: any) => {
-          clearTimeout(abortTimeout);
-          this.debug('response: %o', data);
-          resolve(data);
-        })
-        .catch((error) => {
-          this.debug('response error: %o', error.response || error.message || error);
-          reject(error);
-        });
+      .then((data: any) => {
+        clearTimeout(abortTimeout);
+        this.debug('response: %o', data);
+        resolve(data);
+      })
+      .catch((error) => {
+        this.debug('response error: %o', error.response || error.message || error);
+        reject(error);
+      });
     });
   }
 

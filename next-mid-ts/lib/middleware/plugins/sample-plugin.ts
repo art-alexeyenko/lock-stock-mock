@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { debug } from 'debug';
 
 class SamplePlugin {
+  private debug = debug(`mock:redirects`);
 
-  constructor(private endpoint: string) {
-  }
+  private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api";
 
-  timeout = 4000;
+  private timeout = 4000;
 
-  async exec(req: NextRequest): Promise<NextResponse> {
-    const sampleData = await this.request();
-    console.log(sampleData);
+  async exec(): Promise<NextResponse> {
+    const importantData = await this.request();
+    console.log(importantData);
     return NextResponse.next();
   }
 
@@ -32,15 +32,15 @@ class SamplePlugin {
       })
       .then((data: any) => {
         clearTimeout(abortTimeout);
-        debug(`mock:redirects`)('response: %o', data);
+        this.debug('response: %o', data);
         resolve(data);
       })
       .catch((error: any) => {
-        debug(`mock:redirects`)('response error: %o', error.response || error.message || error);
+        this.debug('response error: %o', error.response || error.message || error);
         reject(error);
       });
     });
   }
 }
 
-export const samplePlugin = new SamplePlugin(process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api");
+export const samplePlugin = new SamplePlugin();

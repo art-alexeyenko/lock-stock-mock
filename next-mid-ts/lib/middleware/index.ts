@@ -9,6 +9,6 @@ export default async function middleware(
 ): Promise<NextResponse> {
   const response = NextResponse.next();
 
-  // return Promise.resolve(response).then(() => redirectsPlugin.exec(req));
-  return Promise.resolve(response).then(() => samplePlugin.exec(req));
+  // return Promise.resolve(response).then(() => redirectsPlugin.exec());
+  return Promise.resolve(response).then(() => samplePlugin.exec());
 }
