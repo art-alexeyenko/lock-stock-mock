@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
 import {
-  RedirectInfo,
   GraphQLRedirectsService,
   GraphQLRedirectsServiceConfig,
 } from './graphql-redirects-service';
@@ -12,7 +11,7 @@ export class RedirectsMiddleware {
    * @param {RedirectsMiddlewareConfig} [config] redirects middleware config
    */
   constructor(config: GraphQLRedirectsServiceConfig) {
-    this.redirectsService = new GraphQLRedirectsService({ ...config, fetch: fetch });
+    this.redirectsService = new GraphQLRedirectsService({ ...config});
   }
 
   /**
@@ -36,7 +35,7 @@ export class RedirectsMiddleware {
    * @returns Promise<RedirectInfo | undefined>
    * @private
    */
-  private async getExistsRedirect(req: NextRequest): Promise<RedirectInfo | undefined> {
+  private async getExistsRedirect(req: NextRequest): Promise<any> {
     const redirects = await this.redirectsService.fetchRedirects();
 
     return redirects[0] || undefined;
