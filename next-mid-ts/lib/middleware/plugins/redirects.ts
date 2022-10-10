@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MiddlewarePlugin } from '..';
 import debug from 'debug';
 
-class RedirectsPlugin implements MiddlewarePlugin {
+class RedirectsPlugin {
 
   private debug = debug(`mock:redirects`);
 
@@ -22,14 +21,6 @@ class RedirectsPlugin implements MiddlewarePlugin {
   }
 `;
 
-order = 0;
-
-constructor() {}
-
-public getHandler(): (req: NextRequest) => Promise<NextResponse> {
-  return this.handler;
-}
-
 private handler = async (req: NextRequest): Promise<NextResponse> => {
   // Find the redirect from result of RedirectService
   const existsRedirect = await this.getExistsRedirect(req);
@@ -37,12 +28,6 @@ private handler = async (req: NextRequest): Promise<NextResponse> => {
   return NextResponse.next();
 };
 
-/**
- * Method returns RedirectInfo when matches
- * @param {NextRequest} req
- * @returns Promise<RedirectInfo | undefined>
- * @private
- */
 private async getExistsRedirect(req: NextRequest): Promise<any> {
   const redirects = await this.fetchRedirects();
 
@@ -50,22 +35,15 @@ private async getExistsRedirect(req: NextRequest): Promise<any> {
 }
 
 async fetchRedirects(): Promise<any> {
-  try {
-    const redirectsResult = await this.request<any>(this.defaultQuery);
+  const redirectsResult = await this.request<any>(this.defaultQuery);
 
-    return [];
-  } catch (error) {
-    console.log(`catched: ${error}`);
-    return [];
-  }
+  return [];
 }
 
 async request<T>(
   query: string
 ): Promise<T> {
   return new Promise((resolve, reject) => {
-    // Note we don't have access to raw request/response with graphql-request
-    // (or nice hooks like we have with Axios), but we should log whatever we have.
     this.debug('request: %o', {
       url: this.endpoint,
       query,
@@ -109,7 +87,7 @@ async request<T>(
    * @returns Promise<NextResponse>
    */
   async exec(req: NextRequest): Promise<NextResponse> {
-    return this.getHandler()(req);
+    return this.handler(req);
   }
 }
 
