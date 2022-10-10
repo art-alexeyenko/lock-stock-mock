@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api", (req, res) => {
-  res.json('Wow, what a response!');
+  res.send('Wow, what a response!');
 })
 
 app.listen(5000, () => {
