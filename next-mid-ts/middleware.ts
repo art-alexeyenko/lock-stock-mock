@@ -3,5 +3,5 @@ import middleware from './lib/middleware';
 
 // eslint-disable-next-line
 export default async function (req: NextRequest, ev: NextFetchEvent) {
-  return middleware();
+  return middleware(req, ev);
 }
