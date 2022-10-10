@@ -13,22 +13,10 @@ class RedirectsPlugin {
 
 private handler = async (req: NextRequest): Promise<NextResponse> => {
   // Find the redirect from result of RedirectService
-  const existsRedirect = await this.getExistsRedirect(req);
+  const redirectsResult = await this.request<any>();
 
   return NextResponse.next();
 };
-
-private async getExistsRedirect(req: NextRequest): Promise<any> {
-  const redirects = await this.fetchRedirects();
-
-  return redirects[0] || undefined;
-}
-
-async fetchRedirects(): Promise<any> {
-  const redirectsResult = await this.request<any>();
-
-  return [];
-}
 
 async request<T>(
 ): Promise<T> {
