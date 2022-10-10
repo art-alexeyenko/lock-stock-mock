@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import debug from 'debug';
 
-class RedirectsPlugin {
+class AlwaysRepro {
 
   private debug = debug(`mock:redirects`);
 
@@ -49,4 +49,4 @@ class RedirectsPlugin {
 
 }
 
-export const redirectsPlugin = new RedirectsPlugin();
+export const alwaysReproPlugin = new AlwaysRepro();

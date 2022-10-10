@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { debug } from 'debug';
 
-class SamplePlugin {
+class MaybeRepro {
   private debug = debug(`mock:redirects`);
 
   private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api";
@@ -43,4 +43,4 @@ class SamplePlugin {
   }
 }
 
-export const samplePlugin = new SamplePlugin();
+export const maybeReproPlugin = new MaybeRepro();
