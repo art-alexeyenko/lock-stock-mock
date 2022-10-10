@@ -11,16 +11,6 @@ class RedirectsPlugin {
 
   private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api";
 
-  private defaultQuery = /* GraphQL */ `
-  query RedirectsQuery($siteName: String!) {
-    site {
-      siteInfo(site: $siteName) {
-        whatever
-      }
-    }
-  }
-`;
-
 private handler = async (req: NextRequest): Promise<NextResponse> => {
   // Find the redirect from result of RedirectService
   const existsRedirect = await this.getExistsRedirect(req);
@@ -35,18 +25,16 @@ private async getExistsRedirect(req: NextRequest): Promise<any> {
 }
 
 async fetchRedirects(): Promise<any> {
-  const redirectsResult = await this.request<any>(this.defaultQuery);
+  const redirectsResult = await this.request<any>();
 
   return [];
 }
 
 async request<T>(
-  query: string
 ): Promise<T> {
   return new Promise((resolve, reject) => {
     this.debug('request: %o', {
       url: this.endpoint,
-      query,
     });
 
     let abortTimeout: NodeJS.Timeout;
@@ -60,12 +48,6 @@ async request<T>(
     fetch(this.endpoint, {
       method: "POST",
       signal: this.abortController.signal,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: query,
-      }),
     })
     .then(res => res.json())
     .then((data: T) => {
