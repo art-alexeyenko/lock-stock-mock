@@ -3,33 +3,16 @@ import {
   RedirectInfo,
   GraphQLRedirectsService,
   GraphQLRedirectsServiceConfig,
-  REDIRECT_TYPE_301,
-  REDIRECT_TYPE_302,
-  REDIRECT_TYPE_SERVER_TRANSFER,
 } from './graphql-redirects-service';
 
-/**
- * extended RedirectsMiddlewareConfig config type for RedirectsMiddleware
- */
-export type RedirectsMiddlewareConfig = Omit<GraphQLRedirectsServiceConfig, 'fetch'> & {
-  locales: string[];
-};
-/**
- * Middleware / handler fetches all redirects from Sitecore instance by grapqhl service
- * compares with current url and redirects to target url
- */
 export class RedirectsMiddleware {
   private redirectsService: GraphQLRedirectsService;
-  private locales: string[];
 
   /**
    * @param {RedirectsMiddlewareConfig} [config] redirects middleware config
    */
-  constructor(config: RedirectsMiddlewareConfig) {
-    // NOTE: we provide native fetch for compatibility on Next.js Edge Runtime
-    // (underlying default 'cross-fetch' is not currently compatible: https://github.com/lquixada/cross-fetch/issues/78)
+  constructor(config: GraphQLRedirectsServiceConfig) {
     this.redirectsService = new GraphQLRedirectsService({ ...config, fetch: fetch });
-    this.locales = config.locales;
   }
 
   /**
@@ -44,39 +27,7 @@ export class RedirectsMiddleware {
     // Find the redirect from result of RedirectService
     const existsRedirect = await this.getExistsRedirect(req);
 
-    if (!existsRedirect) {
-      return NextResponse.next();
-    }
-
-    const url = req.nextUrl.clone();
-    const absoluteUrlRegex = new RegExp('^(?:[a-z]+:)?//', 'i');
-    if (absoluteUrlRegex.test(existsRedirect.target)) {
-      url.href = existsRedirect.target;
-      url.locale = req.nextUrl.locale;
-    } else {
-      url.search = existsRedirect.isQueryStringPreserved ? url.search : '';
-      const urlFirstPart = existsRedirect.target.split('/')[1];
-      if (this.locales.includes(urlFirstPart)) {
-        url.locale = urlFirstPart;
-        url.pathname = existsRedirect.target.replace(`/${urlFirstPart}`, '');
-      } else {
-        url.pathname = existsRedirect.target;
-      }
-    }
-
-    const redirectUrl = decodeURIComponent(url.href);
-
-    /** return Response redirect with http code of redirect type **/
-    switch (existsRedirect.redirectType) {
-      case REDIRECT_TYPE_301:
-        return NextResponse.redirect(redirectUrl, 301);
-      case REDIRECT_TYPE_302:
-        return NextResponse.redirect(redirectUrl, 302);
-      case REDIRECT_TYPE_SERVER_TRANSFER:
-        return NextResponse.rewrite(redirectUrl);
-      default:
-        return NextResponse.next();
-    }
+    return NextResponse.next();
   };
 
   /**

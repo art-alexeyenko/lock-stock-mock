@@ -1,30 +1,13 @@
 import { GraphQLClient, GraphQLRequestClient } from './graphql-request-client';
 import debug from 'debug';
 
-export const REDIRECT_TYPE_301 = 'REDIRECT_301';
-export const REDIRECT_TYPE_302 = 'REDIRECT_302';
-export const REDIRECT_TYPE_SERVER_TRANSFER = 'SERVER_TRANSFER';
-
-export type RedirectInfo = {
-  pattern: string;
-  target: string;
-  redirectType: string;
-  isQueryStringPreserved: boolean;
-  locale: string;
-};
 
 // The default query for request redirects of site
 const defaultQuery = /* GraphQL */ `
   query RedirectsQuery($siteName: String!) {
     site {
       siteInfo(site: $siteName) {
-        redirects {
-          pattern
-          target
-          redirectType
-          isQueryStringPreserved
-          locale
-        }
+        whatever
       }
     }
   }
@@ -35,25 +18,6 @@ export type GraphQLRedirectsServiceConfig = {
    * Your Graphql endpoint
    */
   endpoint: string;
-  /**
-   * The API key to use for authentication
-   */
-  apiKey: string;
-  /**
-   * The JSS application name
-   */
-  siteName: string;
-  /**
-   * Override fetch method. Uses 'GraphQLRequestClient' default otherwise.
-   */
-  fetch?: typeof fetch;
-};
-
-/**
- * The schema of data returned in response to redirects array request
- */
-export type RedirectsQueryResult = {
-  site: { siteInfo: { redirects: RedirectInfo[] } | null };
 };
 
 /**
@@ -79,20 +43,13 @@ export class GraphQLRedirectsService {
    * @returns Promise<RedirectInfo[]>
    * @throws {Error} if the siteName is empty.
    */
-  async fetchRedirects(): Promise<RedirectInfo[]> {
-    const siteName: string = this.options.siteName;
-
-    if (!siteName) {
-      throw new Error('siteNameError');
-    }
+  async fetchRedirects(): Promise<any> {
     try {
-      const redirectsResult = await this.graphQLClient.request<RedirectsQueryResult>(this.query, {
-        siteName,
-      });
+      const redirectsResult = await this.graphQLClient.request<any>(this.query);
 
       return redirectsResult?.site?.siteInfo?.redirects || [];
     } catch (error) {
-      console.log(error);
+      console.log(`catched: ${error}`);
       return [];
     }
   }
@@ -105,9 +62,7 @@ export class GraphQLRedirectsService {
    */
   protected getGraphQLClient(): GraphQLClient {
     return new GraphQLRequestClient(this.options.endpoint, {
-      apiKey: this.options.apiKey,
       debugger: debug(`mock:redirects`),
-      fetch: this.options.fetch,
     });
   }
 }

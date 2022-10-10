@@ -9,11 +9,6 @@ class RedirectsPlugin implements MiddlewarePlugin {
   constructor() {
     this.redirectsMiddleware = new RedirectsMiddleware({
       endpoint: process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api",
-      apiKey: '123',
-      siteName: 'test',
-      // These are all the locales you support in your application.
-      // These should match those in your next.config.js (i18n.locales).
-      locales: ['en'],
     });
   }
 

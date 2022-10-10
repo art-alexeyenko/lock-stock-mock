@@ -19,17 +19,9 @@ export interface GraphQLClient {
  */
 export type GraphQLRequestClientConfig = {
   /**
-   * The API key to use for authentication. This will be added as an 'sc_apikey' header.
-   */
-  apiKey?: string;
-  /**
    * Override debugger for logging. Uses 'sitecore-jss:http' by default.
    */
   debugger?: Debugger;
-  /**
-   * Override fetch method. Uses 'graphql-request' library default otherwise ('cross-fetch').
-   */
-  fetch?: typeof fetch;
   /**
    * GraphQLClient request timeout
    */
@@ -41,7 +33,6 @@ export type GraphQLRequestClientConfig = {
  * https://github.com/prisma-labs/graphql-request
  */
 export class GraphQLRequestClient implements GraphQLClient {
-  private headers: Record<string, string> = {};
   private debug: Debugger;
   private timeout?: number;
   private abortController = new AbortController();
@@ -52,9 +43,6 @@ export class GraphQLRequestClient implements GraphQLClient {
    * @param {GraphQLRequestClientConfig} [clientConfig] GraphQL request client configuration.
    */
   constructor(private endpoint: string, clientConfig: GraphQLRequestClientConfig = {}) {
-    if (clientConfig.apiKey) {
-      this.headers.sc_apikey = clientConfig.apiKey;
-    }
 
     if (!endpoint) {
       throw new Error(
@@ -72,17 +60,14 @@ export class GraphQLRequestClient implements GraphQLClient {
    * @param {Object} variables graphql variables
    */
   async request<T>(
-    query: string | DocumentNode,
-    variables?: { [key: string]: unknown }
+    query: string | DocumentNode
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       // Note we don't have access to raw request/response with graphql-request
       // (or nice hooks like we have with Axios), but we should log whatever we have.
       this.debug('request: %o', {
         url: this.endpoint,
-        headers: this.headers,
         query,
-        variables,
       });
 
       let abortTimeout: NodeJS.Timeout;
@@ -98,11 +83,9 @@ export class GraphQLRequestClient implements GraphQLClient {
         signal: this.abortController.signal,
         headers: {
           'Content-Type': 'application/json',
-          ...this.headers,
         },
         body: JSON.stringify({
           query: query,
-          variables: variables,
         }),
       })
       .then(res => res.json())
