@@ -3,17 +3,6 @@ import type { NextFetchEvent, NextRequest } from 'next/server';
 // import { samplePlugin } from './plugins/sample-plugin';
 import { redirectsPlugin } from './plugins/redirects';
 
-export interface MiddlewarePlugin {
-  /**
-   * Detect order when the plugin should be called, e.g. 0 - will be called first (can be a plugin which data is required for other plugins)
-   */
-  order: number;
-  /**
-   * A middleware to be called, it's required to return @type {NextResponse} for other middlewares
-   */
-  exec(req: NextRequest, res?: NextResponse, ev?: NextFetchEvent): Promise<NextResponse>;
-}
-
 export default async function middleware(
   req: NextRequest,
   ev: NextFetchEvent
@@ -21,4 +10,5 @@ export default async function middleware(
   const response = NextResponse.next();
 
   return Promise.resolve(response).then(() => redirectsPlugin.exec(req));
+  // return Promise.resolve(response).then(() => samplePlugin.exec(req));
 }
