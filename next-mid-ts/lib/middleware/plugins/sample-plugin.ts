@@ -43,7 +43,10 @@ class SamplePlugin  {
    */
   async exec(): Promise<NextResponse> {
 
-    const abort = new AbortController();
+    
+
+    let res = new Promise((resolve, reject) => {
+        const abort = new AbortController();
     let abortTimeout: NodeJS.Timeout;
 
       if (this.timeout) {
@@ -51,31 +54,32 @@ class SamplePlugin  {
           abort.abort();
         }, this.timeout);
       }
-
+      console.log('SAMPLLE!');
       const variables = {siteName: '123'};
-
-    let res = await new Promise((resolve, reject) => fetch(this.endpoint, {
-        method: "POST",
-        signal: abort.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          // ...this.headers,
-        },
-        body: JSON.stringify({
-          query: this.query,
-          variables: variables,
-        }),
-      })
-      .then(res => res.json())
-      .then((data: RedirectsQueryResult) => {
-        clearTimeout(abortTimeout);
-        debug('mock')('response: %o', data);
-        resolve(data);
-      })
-      .catch((error: any) => {
-        debug('mock')('response error: %o', error.response || error.message || error);
-        reject(error);
-      }));
+        fetch(this.endpoint, {
+            method: "POST",
+            signal: abort.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              // ...this.headers,
+            },
+            body: JSON.stringify({
+              query: this.query,
+              variables: variables,
+            }),
+          })
+          .then(res => res.json())
+          .then((data: RedirectsQueryResult) => {
+            clearTimeout(abortTimeout);
+            debug('mock')('response: %o', data);
+            resolve(data);
+          })
+          .catch((error: any) => {
+            debug('mock')('response error: %o', error.response || error.message || error);
+            reject(error);
+          });
+    });
+    await res;
     return NextResponse.next();
   }
 }
