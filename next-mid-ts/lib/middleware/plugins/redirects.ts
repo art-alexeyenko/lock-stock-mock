@@ -11,15 +11,14 @@ class RedirectsPlugin {
 
   private endpoint = process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api";
 
-private handler = async (req: NextRequest): Promise<NextResponse> => {
-  // Find the redirect from result of RedirectService
-  const redirectsResult = await this.request<any>();
+  async exec(req: NextRequest): Promise<NextResponse> {
+    const redirectsResult = await this.request();
 
-  return NextResponse.next();
-};
+    return NextResponse.next();
+  }
 
-async request<T>(
-): Promise<T> {
+async request(
+): Promise<any> {
   return new Promise((resolve, reject) => {
     this.debug('request: %o', {
       url: this.endpoint,
@@ -37,8 +36,7 @@ async request<T>(
       method: "POST",
       signal: this.abortController.signal,
     })
-    .then(res => res.json())
-    .then((data: T) => {
+    .then((data: any) => {
       clearTimeout(abortTimeout);
       this.debug('response: %o', data);
       resolve(data);
@@ -51,14 +49,6 @@ async request<T>(
 }
 
 
-  /**
-   * exec async method - to find coincidence in url.pathname and redirects of site
-   * @param req<NextRequest>
-   * @returns Promise<NextResponse>
-   */
-  async exec(req: NextRequest): Promise<NextResponse> {
-    return this.handler(req);
-  }
 }
 
 export const redirectsPlugin = new RedirectsPlugin();
