@@ -43,9 +43,14 @@ class SamplePlugin  {
    */
   async exec(): Promise<NextResponse> {
 
-    
+    let res = await this.request<RedirectsQueryResult>();
+    if (res)
+        console.log('nice!');
+    return NextResponse.next();
+  }
 
-    let res = new Promise((resolve, reject) => {
+  async request<T>(): Promise<T> {
+    return new Promise((resolve, reject) => {
         const abort = new AbortController();
     let abortTimeout: NodeJS.Timeout;
 
@@ -54,7 +59,6 @@ class SamplePlugin  {
           abort.abort();
         }, this.timeout);
       }
-      console.log('SAMPLLE!');
       const variables = {siteName: '123'};
         fetch(this.endpoint, {
             method: "POST",
@@ -69,7 +73,7 @@ class SamplePlugin  {
             }),
           })
           .then(res => res.json())
-          .then((data: RedirectsQueryResult) => {
+          .then((data: T) => {
             clearTimeout(abortTimeout);
             debug(`mock:redirects`)('response: %o', data);
             resolve(data);
@@ -79,9 +83,8 @@ class SamplePlugin  {
             reject(error);
           });
     });
-    await res;
-    return NextResponse.next();
   }
+
 }
 
 export const samplePlugin = new SamplePlugin(process.env.FETCH_ENDPOINT || "https://lock-stock-mock.vercel.app/api");
