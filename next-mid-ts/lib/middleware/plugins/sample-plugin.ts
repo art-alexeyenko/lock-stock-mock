@@ -14,6 +14,7 @@ type RedirectsQueryResult = {
   };
 
 class SamplePlugin  {
+    private headers: Record<string, string> = {'sc_apikey': '123'};
 
   constructor(private endpoint: string) {
   }
@@ -65,7 +66,7 @@ class SamplePlugin  {
             signal: abort.signal,
             headers: {
               'Content-Type': 'application/json',
-              // ...this.headers,
+              ...this.headers,
             },
             body: JSON.stringify({
               query: this.query,
